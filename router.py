@@ -37,7 +37,11 @@ class Router:
 
     def listening_thread(self):
         receive_socket = Connection.create_udp_socket()
-        Connection.udp_bind(receive_socket, '', self.port)
+        try:
+            Connection.udp_bind(receive_socket, '', self.port)
+        except Exception as e:
+            print 'The port has been in use.'
+            os._exit(1)
         while True:
             data_json = dict(Connection.receive(receive_socket))
             # print data_json
