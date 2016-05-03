@@ -19,7 +19,9 @@ class Router:
 
     def start(self):
         send_socket = Connection.create_udp_socket()
-        Thread(target=self.listening_thread, args=()).start()
+        thread = Thread(target=self.listening_thread, args=())
+        thread.daemon = True
+        thread.start()
 
         while True:
             packet = self.create_packet()
@@ -136,9 +138,10 @@ def main():
             while count < len(sys.argv):
                 string = sys.argv[count].split(':')
 
-                identifier = string[0] + ':' + string[1]  # e.g.: identifier = 128.59.16.1:2001
+                addr = socket.gethostbyname(string[0])
+                identifier = addr + ':' + string[1]  # e.g.: identifier = 128.59.16.1:2001
                 neighbors[identifier] = {
-                    'addr': string[0],
+                    'addr': addr,
                     'port': int(string[1]),
                     'distance': int(string[2]),
                     'interface': count-1
